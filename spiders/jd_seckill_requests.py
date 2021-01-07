@@ -78,7 +78,7 @@ class JdSeckill(object):
         self._seckill()
 
     @check_login
-    def seckill_by_proc_pool(self, work_count=8):
+    def seckill_by_proc_pool(self, work_count=5):
         """
         多进程进行抢购
         work_count：进程数量
@@ -184,7 +184,7 @@ class JdSeckill(object):
                 logger.info("抢购链接获取成功: %s", seckill_url)
                 return seckill_url
             else:
-                logger.info("抢购链接获取失败，稍后自动重试")
+                logger.info("抢购链接获取失败，稍后自动重试", resp.text)
                 wait_some_time()
 
     def request_seckill_url(self):
