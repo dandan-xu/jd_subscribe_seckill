@@ -1,6 +1,7 @@
 import sys
 from spiders.jd_order_requests import JdSubscribe
 from spiders.jd_seckill_requests import JdSeckill
+from spiders.jd_seckill_xiaomi_requests import JdSeckillXiaomi
 from spiders.jd_coupon_requests import JdCoupon
 
 if __name__ == '__main__':
@@ -12,9 +13,11 @@ if __name__ == '__main__':
 \________|/_______  /         \_______  /__|  \____ |\___  >__|            /_______  /\___  >\___  >__|_ \__|____/____/
                   \/                  \/           \/    \/                        \/     \/     \/     \/             
 功能列表：                                                                                
- 1.预约商品
- 2.秒杀抢购商品
+ 1.预约茅台
+ 2.秒杀茅台
  3.京东超级全城购，满199-198优惠券
+ 4.预约小米11白8G-256
+ 5.秒杀小米11白8G-256
     """
     print(a)
 
@@ -28,6 +31,12 @@ if __name__ == '__main__':
     elif choice_function == '3':
         jd_coupon = JdCoupon()
         jd_coupon.receive()
+    elif choice_function == '4':
+        jd_subscribe = JdSubscribe()
+        jd_subscribe.reserve_xiaomi()
+    elif choice_function == '5':
+        jd_seckill_xiaomi = JdSeckillXiaomi()
+        jd_seckill_xiaomi.seckill_by_proc_pool_xiaomi()
     else:
         print('没有此功能')
         sys.exit(1)

@@ -1,7 +1,6 @@
 import functools
 import random
 import time
-import datetime
 from concurrent.futures import ProcessPoolExecutor
 
 from lxml import etree
@@ -18,7 +17,7 @@ from util import (
 )
 
 
-class JdSeckill(object):
+class JdSeckillXiaomi(object):
     def __init__(self):
         self.spider_session = SpiderSession()
         self.spider_session.load_cookies_from_local()
@@ -26,10 +25,10 @@ class JdSeckill(object):
         self.qrlogin = QrLogin(self.spider_session)
 
         # 初始化信息
-        self.sku_id = global_config.getRaw('config', 'sku_id')
+        self.sku_id = global_config.getRaw('config', 'xiaomi_sku_id')
         self.sku_url = 'https://item.jd.com/{}.html'
         self.marathon_url = 'marathon.jd.com'
-        self.seckill_num = 2
+        self.seckill_num = 1
         self.seckill_init_info = dict()
         self.seckill_url = dict()
         self.seckill_order_data = dict()
@@ -78,7 +77,7 @@ class JdSeckill(object):
         self._seckill()
 
     @check_login
-    def seckill_by_proc_pool(self, work_count=5):
+    def seckill_by_proc_pool_xiaomi(self, work_count=1):
         """
         多进程进行抢购
         work_count：进程数量
@@ -146,10 +145,10 @@ class JdSeckill(object):
         """
         url = 'https://itemko.jd.com/itemShowBtn'
         payload = {
-            'callback': 'jQuery{}'.format(random.randint(1000000, 9999999)),
+            # 'callback': 'jQuery{}'.format(random.randint(1000000, 9999999)),
             'skuId': self.sku_id,
             'from': 'pc',
-            '_': str(int(time.time() * 1000)),
+            # '_': str(int(time.time() * 1000)),
         }
         headers = {
             'User-Agent': self.user_agent,
@@ -158,18 +157,18 @@ class JdSeckill(object):
         }
         while True:
             resp = self.session.get(url=url, headers=headers, params=payload)
+            # TODO 待验证返回的抢购链接
+            print('resp.text', resp.text)
             resp_json = parse_json(resp.text)
             if resp_json.get('url'):
                 # https://divide.jd.com/user_routing?skuId=8654289&sn=c3f4ececd8461f0e4d7267e96a91e0e0&from=pc
                 router_url = 'https:' + resp_json.get('url')
                 # https://marathon.jd.com/captcha.html?skuId=8654289&sn=c3f4ececd8461f0e4d7267e96a91e0e0&from=pc
-                seckill_url = router_url.replace(
-                    'divide', 'marathon').replace(
-                    'user_routing', 'captcha.html')
+                seckill_url = router_url.replace('divide', 'marathon').replace('user_routing', 'captcha.html')
                 logger.info("抢购链接获取成功: %s", seckill_url)
                 return seckill_url
             else:
-                logger.info("抢购链接获取失败，稍后自动重试", resp.text)
+                logger.info("抢购链接获取失败，稍后自动重试")
                 wait_some_time()
 
     def request_seckill_url(self):
